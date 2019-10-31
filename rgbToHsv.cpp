@@ -1,3 +1,6 @@
+#ifndef RGBTOHSV
+#define RGBTOHSV
+
 #define maximum(x, y, z) ((x) > (y)? ((x) > (z)? (x) : (z)) : ((y) > (z)? (y) : (z)))
 #define minimum(x, y, z) ((x) < (y)? ((x) < (z)? (x) : (z)) : ((y) < (z)? (y) : (z)))
 
@@ -39,3 +42,5 @@ void RGBtoHSV(int r,int g,int b,double &h,double &s,double &v) {
     }
   }
 }
+
+#endif
