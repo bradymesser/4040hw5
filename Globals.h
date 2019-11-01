@@ -1,7 +1,19 @@
+/*
+Brady Messer (wmesser@clemson.edu)
+CPSC 4040 Fall 2019
+This file contains the necessary globals for GLUT
+The name of the keyboard callback function is: handleKey
+The name of the drawImage callback function is: drawImage
+The name of the reshape callback function is: handleReshape
+*/
+
 #ifndef GLOBALS
 #define GLOBALS
 
 #include "Helper.h"
+
+int WIDTH = 500;
+int HEIGHT = 500;
 
 Image image = Image();
 Image originalImage = Image();

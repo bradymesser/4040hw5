@@ -1,3 +1,9 @@
+/*
+Brady Messer (wmesser@clemson.edu)
+CPSC 4040 Fall 2019
+This file contains the implementation of the Image class
+*/
+
 #ifndef IMAGE
 #define IMAGE
 
@@ -29,6 +35,15 @@ Image::Image(string file) {
   in->read_image (TypeDesc::UINT8, &pixels[0]);
   in->close ();
   ImageInput::destroy (in);
+  DEFAULT_OUT_OF_BOUNDS_VALUE = 0;
+}
+
+Image::Image(int w, int h, int chan) {
+  width = w;
+  height = h;
+  channels = chan;
+  ext = "undefined";
+  pixels = new unsigned char[width*height*channels];
   DEFAULT_OUT_OF_BOUNDS_VALUE = 0;
 }
 

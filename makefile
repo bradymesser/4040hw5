@@ -3,24 +3,24 @@ FILTER = Filter
 IMAGE = Image
 RGBTOHSV = rgbToHsv
 GLOBALS = Globals
-OBJECTS = ${PROJECT}.o matrix.o ${FILTER}.o ${IMAGE}.o ${RGBTOHSV}.o ${GLOBALS}.o
+OBJECTS = ${PROJECT}.o matrix.o ${FILTER}.o ${IMAGE}.o ${RGBTOHSV}.o
 
 default:
 	g++ -c -g *.cpp
 	g++ -g -o ${PROJECT} ${OBJECTS} -L /usr/lib64/ -lglut -lGL -lGLU -lOpenImageIO -lm
-	
+
 clean:
-	rm -f core.* *.o *~ ${PROJECT}
+	rm -f core.* *.o *~ ${PROJECT} .nfs*
 
 run:
 	-make clean
 	-make default
-	./convolve filters/cross.filt images/checkers.png
+	-./${PROJECT} images/waves.png
 
-square:
+r:
 	-make clean
 	-make default
-	./convolve filters/pulse.filt images/square.png
+	./${PROJECT} images/durer_rhino.png
 
 
 # CC      = g++

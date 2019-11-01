@@ -1,10 +1,13 @@
+/*
+Brady Messer (wmesser@clemson.edu)
+CPSC 4040 Fall 2019
+This file contains the implementation of the Filter class
+*/
+
 #ifndef FILTER
 #define FILTER
 
 #include "Helper.h"
-
-int WIDTH = 500;
-int HEIGHT = 500;
 
 Filter::Filter() {
   size = 0;
