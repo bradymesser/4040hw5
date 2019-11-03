@@ -40,6 +40,73 @@ void Rotate(Matrix3D &M, float theta) {
 
 }
 
+void Scale(Matrix3D &M, float sx, float sy) {
+	Matrix3D R;
+
+	R[0][0] = sx;
+	R[1][1] = sy;
+
+	M = R * M;
+
+}
+
+void Translate(Matrix3D &M, float v02, float v12) {
+	Matrix3D R;
+
+	R[0][2] = v02;
+	R[1][2] = v12;;
+
+	M = R * M;
+
+}
+
+void Shear(Matrix3D &M, float v01, float v10) {
+	Matrix3D R;
+
+	R[0][0] = 1;
+	R[1][1] = 1;
+	R[2][2] = 1;
+	R[0][1] = v01;
+	R[1][0] = v10;
+
+	M = R * M;
+}
+
+
+void Flip(Matrix3D &M, bool h, bool v, float val) {
+	Matrix3D R;
+
+	if (h) {
+		R[0][0] = -1;
+		R[1][1] = 1;
+		R[0][2] = val;
+	}
+	if (v) {
+		R[0][0] = 1;
+		R[1][1] = -1;
+		R[1][2] = val;
+	}
+
+
+	M = R * M;
+}
+
+void Perspective(Matrix3D &M, float *vals, int s) {
+	Matrix3D R;
+
+	for (int i = 0; i < sqrt(s+1); i++) {
+		for (int j = 0; j < sqrt(s+1); j++) {
+			// cout << (i*(sqrt(s+1)))+j << endl;
+			if (i == 2 && j == 2)
+				R[i][j] = 1;
+			else
+				R[i][j] = vals[(int)(i*(sqrt(s+1))+j)];
+			cout << R[i][j] << " ";
+		}
+		cout << endl;
+	}
+	M = R * M;
+}
 
 /*
 Build a transformation matrix from input text
@@ -74,9 +141,8 @@ void read_input(Matrix3D &M) {
 					float scaleY;
 					cin >> scaleX >> scaleY;
 					if (cin) {
-						cout << "scaling\n";
-						M[0][0] = scaleX;
-						M[1][1] = scaleY;
+						cout << "calling scale\n";
+						Scale(M, scaleX, scaleY);
 					}
 					else {
 						cerr << "invalid scale\n";
@@ -84,13 +150,70 @@ void read_input(Matrix3D &M) {
 					}
 					break;
 				case 't':		/* Translation, accept translations */
+					float v02;
+					float v12;
+					cin >> v02 >> v12;
+					if (cin) {
+						cout << "calling translate\n";
+						Translate(M, v02, v12);
+					}
+					else {
+						cerr << "invalid translation\n";
+						cin.clear();
+					}
 					break;
 				case 'h':		/* Shear, accept shear factors */
+					float v01;
+					float v10;
+					cin >> v01 >> v10;
+					if (cin) {
+						cout << "calling shear\n";
+						Shear(M, v01, v10);
+					}
+					else {
+						cerr << "invalid shear\n";
+						cin.clear();
+					}
 					break;
-				case 'f':		/* Flip, accept flip factors */
+				case 'f':	{	/* Flip, accept flip factors */
+					cout << "horizontal or vertical? (h/v): \n";
+					char in;
+					cin >> in;
+					float val = 0.0;
+					cout << "floating point value: \n";
+					cin >> val;
+					if (cin) {
+						if (in == 'h')
+							Flip(M,true,false,val);
+						else if (in == 'v')
+							Flip(M,false,true,val);
+						else
+							cout << "Invalid input.  Input h for horizontal and v for vertical.\n";
+					}
+					else {
+						cerr << "invalid flip\n";
+						cin.clear();
+					}
 					break;
-				case 'p':		/* Perspective, accept perspective factors */
+				}
+				case 'p':	{	/* Perspective, accept perspective factors */
+					int s = 8;
+					// float val = 0.0;
+					float vals[s];
+					for (int i = 0; i < s; i++) {
+						cout << "Factor: " << i << endl;
+						cin >> vals[i];
+					}
+					if (cin) {
+						cout << "calling perspective\n";
+						Perspective(M, vals, s);
+					}
+					else {
+						cerr << "invalid perspective\n";
+						cin.clear();
+					}
 					break;
+				}
 				case 'd':		/* Done, that's all for now */
 					break;
 				default:
@@ -156,7 +279,7 @@ int main(int argc, char *argv[]){
 	 float maxX = temp.x;
 	 float maxY = temp.y;
 
-	 for (int i = 0; i < 3; i++) {
+	 for (int i = 0; i < 4; i++) {
 		 temp = M * corners[i];
 		 if (temp.z != 1) {
 			 temp.x /= temp.z;
@@ -176,9 +299,8 @@ int main(int argc, char *argv[]){
 	 //2)
 	 int w = maxX - minX;
 	 int h = maxY - minY;
-	 cout << "In image size : " << image.width << "x" << image.height << endl;
-	 cout << "Out image size: " << w << "x" << h << endl;
-	 cout << "MinXxMinY: " << minX << "x" << minY << endl;
+	 cout << "Input image size : " << image.width << "x" << image.height << endl;
+	 cout << "Output image size: " << w << "x" << h << endl;
 	 Image img = Image(w,h,image.channels);
 
 	 //3)
@@ -187,7 +309,6 @@ int main(int argc, char *argv[]){
 	 //4)
 	 Vector3D origin = Vector3D(minX, minY, 1);
 	 Vector3D t;
-	 cout << "Origin: " << (int)origin.x << "," << (int)origin.y << endl;
 	 /*
 	   | 0 | 1 | 2
 	 0 | 0 | 1 | 2
@@ -202,11 +323,8 @@ int main(int argc, char *argv[]){
 
 	 for (int i = 0; i < image.width * image.height * image.channels; i+=image.channels) {
 		 pix[k][l].pix = new unsigned char (image.channels);
-		 // cout << "*" << k << "," << l<<endl;
 		 for (int j = 0; j < image.channels; j++) {
-			 // cout << j << "k: " << k << "l: " << l << "i: " << i;
 			 pix[k][l].pix[j] = image.pixels[i + j];
-			 // cout << "e" << endl;
 		 }
      l++;
      if (l == image.width) {
@@ -225,10 +343,8 @@ int main(int argc, char *argv[]){
 
 		 float u = pixel_in.x / pixel_in.z;
 		 float v = pixel_in.y / pixel_in.z;
-		 // cout << "u: " << u << "v: " << v << "i: " << i << endl;
 		 if (v >= 0 && v < image.height && u >= 0 && u < image.width) {
 			 for (int j = 0; j < image.channels; j++) {
-				 // if (v > 0 && v < img.height && u > 0 && u < img.width)
 			 		img.pixels[i+j] = pix[(int)v][(int)u].pix[j];
 		 	}
 	 	}

@@ -51,6 +51,8 @@ class Image {
     Image(string file);
     // overloaded constructor, creates image of size w*h*chan
     Image(int w, int h, int chan);
+    // Converts the 1d pixel array to a 2d pixel array
+    
     // copy function
     void copy(const Image& img);
     // //writes the object to a file

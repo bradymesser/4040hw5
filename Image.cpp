@@ -233,9 +233,11 @@ void Image::convolve(Filter filter) {
       k++;
     }
   }
+
   k = 0;
   int a = 0;
   int b = 0;
+  
   // Loop through the 2d pixels and for each pixel populate a matrice to use in multiplication
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width * channels; j+=channels) {
