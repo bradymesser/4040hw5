@@ -9,12 +9,36 @@ This file contains the implementation of the Image class
 
 #include "Helper.h"
 
+void Image::convertTo2DPixels() {
+  // Pixel pix[height][width];
+  pixels2D = new Pixel*[height];
+  for(int i = 0; i < height; ++i) {
+      pixels2D[i] = new Pixel[width];
+  }
+
+  int k = 0;
+  int l = 0;
+
+  for (int i = 0; i < width * height * channels; i+=channels) {
+    pixels2D[k][l].pix = new unsigned char (channels);
+    for (int j = 0; j < channels; j++) {
+      pixels2D[k][l].pix[j] = pixels[i + j];
+    }
+    l++;
+    if (l == width) {
+      l = 0;
+      k++;
+    }
+  }
+}
+
 Image::Image() {
   //Nothing to do without a specified file, set all values to defaults
   width = 0;
   height = 0;
   channels = 0;
   pixels = NULL;
+  pixels2D = NULL;
   ext = "";
   DEFAULT_OUT_OF_BOUNDS_VALUE = 0;
 }
@@ -36,6 +60,7 @@ Image::Image(string file) {
   in->close ();
   ImageInput::destroy (in);
   DEFAULT_OUT_OF_BOUNDS_VALUE = 0;
+  convertTo2DPixels();
 }
 
 Image::Image(int w, int h, int chan) {
@@ -237,7 +262,7 @@ void Image::convolve(Filter filter) {
   k = 0;
   int a = 0;
   int b = 0;
-  
+
   // Loop through the 2d pixels and for each pixel populate a matrice to use in multiplication
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width * channels; j+=channels) {

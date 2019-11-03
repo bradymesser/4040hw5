@@ -34,15 +34,22 @@ class Filter {
     bool isFlipped();
 };
 
+// The struct that represents an individual pixel
+struct Pixel {
+	unsigned char * pix;
+};
+
 // The class that represents an image
 class Image {
   private:
     int DEFAULT_OUT_OF_BOUNDS_VALUE;
+    void convertTo2DPixels();
   public:
     int width;
     int height;
     int channels;
     unsigned char * pixels;
+    Pixel ** pixels2D;
     string ext;
 
     //default constructor
@@ -51,8 +58,6 @@ class Image {
     Image(string file);
     // overloaded constructor, creates image of size w*h*chan
     Image(int w, int h, int chan);
-    // Converts the 1d pixel array to a 2d pixel array
-    
     // copy function
     void copy(const Image& img);
     // //writes the object to a file

@@ -24,8 +24,19 @@ using std::string;
 Multiply M by a rotation matrix of angle theta
 */
 
-void Rotate(Matrix3D &M, float theta) {
-	int row, col;
+void Rotate(Matrix3D &M) {
+	float theta;
+	cout << "Enter theta: ";
+	cin >> theta;
+	if (cin) {
+		cout << "calling rotate\n";
+	}
+	else {
+		cerr << "invalid rotation angle\n";
+		cin.clear();
+		return;
+	}
+
 	Matrix3D R;
 	double rad, c, s;
 	rad = PI * theta / 180.0;
@@ -40,7 +51,24 @@ void Rotate(Matrix3D &M, float theta) {
 
 }
 
-void Scale(Matrix3D &M, float sx, float sy) {
+void Scale(Matrix3D &M) {
+	float sx;
+	float sy;
+	cout << "Enter scaleX then scaleY: ";
+	cin >> sx >> sy;
+	if (sx == 0 || sy == 0) {
+		cout << "Nice try, you think I wouldn't catch that scale by 0? Returning.\n";
+		return;
+	}
+	if (cin) {
+		cout << "calling scale\n";
+	}
+	else {
+		cerr << "invalid scale\n";
+		cin.clear();
+		return;
+	}
+
 	Matrix3D R;
 
 	R[0][0] = sx;
@@ -50,7 +78,20 @@ void Scale(Matrix3D &M, float sx, float sy) {
 
 }
 
-void Translate(Matrix3D &M, float v02, float v12) {
+void Translate(Matrix3D &M) {
+	float v02;
+	float v12;
+	cout << "Enter translation value dx then dy: ";
+	cin >> v02 >> v12;
+	if (cin) {
+		cout << "calling translate\n";
+	}
+	else {
+		cerr << "invalid translation\n";
+		cin.clear();
+		return;
+	}
+
 	Matrix3D R;
 
 	R[0][2] = v02;
@@ -60,7 +101,20 @@ void Translate(Matrix3D &M, float v02, float v12) {
 
 }
 
-void Shear(Matrix3D &M, float v01, float v10) {
+void Shear(Matrix3D &M) {
+	float v01;
+	float v10;
+	cout << "Enter shear value hx then hy: ";
+	cin >> v01 >> v10;
+	if (cin) {
+		cout << "calling shear\n";
+	}
+	else {
+		cerr << "invalid shear\n";
+		cin.clear();
+		return;
+	}
+
 	Matrix3D R;
 
 	R[0][0] = 1;
@@ -73,25 +127,70 @@ void Shear(Matrix3D &M, float v01, float v10) {
 }
 
 
-void Flip(Matrix3D &M, bool h, bool v, float val) {
+void Flip(Matrix3D &M) {
+	bool h = false;
+	bool v = false;
+	// cout << "horizontal or vertical? (h/v): \n";
+	// char in;
+	// cin >> in;
+	// float val = 0.0;
+	// cout << "floating point value: \n";
+	// cin >> val;
+	int fx,fy;
+	cout << "Enter fx then fy: ";
+	cin >> fx >> fy;
+	if (cin) {
+		if (fx == 1)
+			h = true;
+		if (fy == 1)
+			v = true;
+	}
+	else {
+		cerr << "Invalid input. To flip horizontally or vertically enter 1 for fx and/or fy respectively.\n";
+		cin.clear();
+		return;
+	}
+
 	Matrix3D R;
 
+	if (h && v) {
+		cout << "Can only flip one direction at a time, doing horizontal.\n";
+	}
+
 	if (h) {
+		cout << "Flipping horizontally\n";
 		R[0][0] = -1;
 		R[1][1] = 1;
-		R[0][2] = val;
+		R[0][2] = fx;
 	}
-	if (v) {
+	else if (v) {
+		cout << "Flipping vertically\n";
 		R[0][0] = 1;
 		R[1][1] = -1;
-		R[1][2] = val;
+		R[1][2] = fy;
 	}
 
 
 	M = R * M;
 }
 
-void Perspective(Matrix3D &M, float *vals, int s) {
+void Perspective(Matrix3D &M) {
+	int s = 8;
+	float vals[s];
+	cout << "Enter the 8 perspective warp values: \n";
+	for (int i = 0; i < s; i++) {
+		cout << "Factor: " << i << endl;
+		cin >> vals[i];
+	}
+	if (cin) {
+		cout << "calling perspective\n";
+	}
+	else {
+		cerr << "invalid perspective\n";
+		cin.clear();
+		return;
+	}
+
 	Matrix3D R;
 
 	for (int i = 0; i < sqrt(s+1); i++) {
@@ -101,9 +200,7 @@ void Perspective(Matrix3D &M, float *vals, int s) {
 				R[i][j] = 1;
 			else
 				R[i][j] = vals[(int)(i*(sqrt(s+1))+j)];
-			cout << R[i][j] << " ";
 		}
-		cout << endl;
 	}
 	M = R * M;
 }
@@ -125,95 +222,23 @@ void read_input(Matrix3D &M) {
 		else {
 			switch (cmd[0]) {
 				case 'r':		/* Rotation, accept angle in degrees */
-					float theta;
-					cin >> theta;
-					if (cin) {
-						cout << "calling rotate\n";
-						Rotate(M, theta);
-					}
-					else {
-						cerr << "invalid rotation angle\n";
-						cin.clear();
-					}
+					Rotate(M);
 					break;
 				case 's':		/* scale, accept scale factors */
-					float scaleX;
-					float scaleY;
-					cin >> scaleX >> scaleY;
-					if (cin) {
-						cout << "calling scale\n";
-						Scale(M, scaleX, scaleY);
-					}
-					else {
-						cerr << "invalid scale\n";
-						cin.clear();
-					}
+					Scale(M);
 					break;
 				case 't':		/* Translation, accept translations */
-					float v02;
-					float v12;
-					cin >> v02 >> v12;
-					if (cin) {
-						cout << "calling translate\n";
-						Translate(M, v02, v12);
-					}
-					else {
-						cerr << "invalid translation\n";
-						cin.clear();
-					}
+					Translate(M);
 					break;
 				case 'h':		/* Shear, accept shear factors */
-					float v01;
-					float v10;
-					cin >> v01 >> v10;
-					if (cin) {
-						cout << "calling shear\n";
-						Shear(M, v01, v10);
-					}
-					else {
-						cerr << "invalid shear\n";
-						cin.clear();
-					}
+					Shear(M);
 					break;
-				case 'f':	{	/* Flip, accept flip factors */
-					cout << "horizontal or vertical? (h/v): \n";
-					char in;
-					cin >> in;
-					float val = 0.0;
-					cout << "floating point value: \n";
-					cin >> val;
-					if (cin) {
-						if (in == 'h')
-							Flip(M,true,false,val);
-						else if (in == 'v')
-							Flip(M,false,true,val);
-						else
-							cout << "Invalid input.  Input h for horizontal and v for vertical.\n";
-					}
-					else {
-						cerr << "invalid flip\n";
-						cin.clear();
-					}
+				case 'f':		/* Flip, accept flip factors */
+					Flip(M);
 					break;
-				}
-				case 'p':	{	/* Perspective, accept perspective factors */
-					int s = 8;
-					// float val = 0.0;
-					float vals[s];
-					for (int i = 0; i < s; i++) {
-						cout << "Factor: " << i << endl;
-						cin >> vals[i];
-					}
-					if (cin) {
-						cout << "calling perspective\n";
-						Perspective(M, vals, s);
-					}
-					else {
-						cerr << "invalid perspective\n";
-						cin.clear();
-					}
+				case 'p':		/* Perspective, accept perspective factors */
+					Perspective(M);
 					break;
-				}
 				case 'd':		/* Done, that's all for now */
 					break;
 				default:
@@ -223,10 +248,6 @@ void read_input(Matrix3D &M) {
 	} while (cmd.compare("d")!=0);
 
 }
-
-struct Pixel {
-	unsigned char * pix;
-};
 
 /*
    Main program to read an image file, then ask the user
@@ -257,11 +278,6 @@ int main(int argc, char *argv[]){
     M.print();
 
    // your code to perform inverse mapping (4 steps)
-	 // 1)compute bounding box
-	 // 2)allocate output image
-	 // 3)compute inverse Matrix
-	 // 4)apply inverse map
-
 	 // 1)
 	 Vector2D corners[4];
 	 corners[0] = Vector2D(0,0);
@@ -301,40 +317,22 @@ int main(int argc, char *argv[]){
 	 int h = maxY - minY;
 	 cout << "Input image size : " << image.width << "x" << image.height << endl;
 	 cout << "Output image size: " << w << "x" << h << endl;
+	 if (w < 1 || h < 1) {
+		 cerr << "Invalid warp matrix caused the output image to not exist.  Exiting.\n";
+		 exit(1);
+	 }
 	 Image img = Image(w,h,image.channels);
 
 	 //3)
 	 Matrix3D inv = M.inverse();
-	 inv.print();
 	 //4)
 	 Vector3D origin = Vector3D(minX, minY, 1);
 	 Vector3D t;
-	 /*
-	   | 0 | 1 | 2
-	 0 | 0 | 1 | 2
-	 1 | 3 | 4 | 5
-	 2 | 6 | 7 | 8
-	 */
-// (row * width) + column
-	 Pixel p;
-	 Pixel pix[image.height][image.width];
+
 	 int k = 0;
-   int l = 0;
+	 int l = 0;
 
-	 for (int i = 0; i < image.width * image.height * image.channels; i+=image.channels) {
-		 pix[k][l].pix = new unsigned char (image.channels);
-		 for (int j = 0; j < image.channels; j++) {
-			 pix[k][l].pix[j] = image.pixels[i + j];
-		 }
-     l++;
-     if (l == image.width) {
-       l = 0;
-       k++;
-     }
-   }
-	 k = 0;
-	 l = 0;
-
+	 // TODO: Make the inverse mapping a function of the image class
 	 for (int i = 0; i < img.width * img.height * img.channels; i+=img.channels) {
 		 Vector3D pixel_out(l,k,1);
 		 pixel_out.x += origin.x;
@@ -345,7 +343,7 @@ int main(int argc, char *argv[]){
 		 float v = pixel_in.y / pixel_in.z;
 		 if (v >= 0 && v < image.height && u >= 0 && u < image.width) {
 			 for (int j = 0; j < image.channels; j++) {
-			 		img.pixels[i+j] = pix[(int)v][(int)u].pix[j];
+			 		img.pixels[i+j] = image.pixels2D[(int)v][(int)u].pix[j];
 		 	}
 	 	}
      l++;
@@ -356,6 +354,8 @@ int main(int argc, char *argv[]){
    }
 
 	 image = img;	// the most important line
+	 if (argc == 3)
+	 	image.writeImage(argv[2]);
 
    //your code to display the warped image
 	 glutInit(&argc, argv);
